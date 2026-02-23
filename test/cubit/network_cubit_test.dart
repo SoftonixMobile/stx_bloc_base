@@ -9,6 +9,13 @@ class TestNetworkCubit extends NetworkCubit<String, NetworkState<String>> {
   TestNetworkCubit() : super(NetworkState(data: ''));
 
   @override
+  Future<String> onLazyLoad() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    return 'Lazy loaded';
+  }
+
+  @override
   Future<String> onLoadAsync() async {
     await Future.delayed(Duration(milliseconds: 100));
 
@@ -31,6 +38,16 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.status.isInitial, isTrue);
         expect(bloc.state.data, isEmpty);
+      },
+    );
+
+    blocTest(
+      'Lazy load data',
+      build: () => TestNetworkCubit(),
+      act: (bloc) => bloc.lazyLoad(),
+      verify: (bloc) {
+        expect(bloc.state.status.isSuccess, isTrue);
+        expect(bloc.state.data, 'Lazy loaded');
       },
     );
 

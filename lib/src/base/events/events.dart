@@ -2,6 +2,8 @@ import '../models/models.dart';
 
 abstract class NetworkEventBase {}
 
+class NetworkEventLazyLoadAsync implements NetworkEventBase {}
+
 class NetworkEventLoadAsync implements NetworkEventBase {}
 
 class NetworkEventLoadWithExtraAsync implements NetworkEventBase {}

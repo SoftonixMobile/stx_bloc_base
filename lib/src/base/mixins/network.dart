@@ -8,17 +8,28 @@ import '../index.dart';
 mixin NetworkBlocMixin<T, S extends NetworkStateBase<T>>
     on Bloc<NetworkEventBase, S>, NetworkBaseMixin<T, S> {
   void network() {
+    on<NetworkEventLazyLoadAsync>(onEventLazyLoadAsync);
     on<NetworkEventLoadAsync>(onEventLoadAsync);
     on<NetworkEventUpdate>(onEventUpdate);
     on<NetworkEventUpdateAsync>(onEventUpdateAsync);
   }
 
   @override
+  void lazyLoad() => add(NetworkEventLazyLoadAsync());
+  @override
   void load() => add(NetworkEventLoadAsync());
   @override
   void update(T updatedData) => add(NetworkEventUpdate(updatedData));
   @override
   void updateAsync(T updatedData) => add(NetworkEventUpdateAsync(updatedData));
+
+  @protected
+  FutureOr<void> onEventLazyLoadAsync(
+    NetworkEventLazyLoadAsync event,
+    Emitter<NetworkStateBase<T>> emit,
+  ) {
+    return super.lazyLoad();
+  }
 
   @protected
   FutureOr<void> onEventLoadAsync(
@@ -38,12 +49,43 @@ mixin NetworkBlocMixin<T, S extends NetworkStateBase<T>>
 
   @protected
   FutureOr<void> onEventUpdateAsync(
-      NetworkEventUpdateAsync event, Emitter<NetworkStateBase<T>> emit) async {
+    NetworkEventUpdateAsync event,
+    Emitter<NetworkStateBase<T>> emit,
+  ) async {
     return super.updateAsync(event.updatedData);
   }
 }
 
 mixin NetworkBaseMixin<T, S extends NetworkStateBase<T>> on BlocBase<S> {
+  FutureOr<void> lazyLoad() async {
+    final lazyLoadFuture = onLazyLoad();
+
+    if (lazyLoadFuture is T) {
+      return emit(
+        onStateChanged(
+          DataChangeReason.loaded,
+          state.copyWithSuccess(lazyLoadFuture) as S,
+        ),
+      );
+    } else {
+      emit(state.copyWithLoading() as S);
+
+      try {
+        var data = await lazyLoadFuture;
+
+        emit(
+          onStateChanged(
+            DataChangeReason.loaded,
+            state.copyWithSuccess(data) as S,
+          ),
+        );
+      } catch (e, stackTrace) {
+        emit(state.copyWithFailure() as S);
+        addError(e, stackTrace);
+      }
+    }
+  }
+
   FutureOr<void> load() async {
     emit(state.copyWithLoading() as S);
 
@@ -88,6 +130,8 @@ mixin NetworkBaseMixin<T, S extends NetworkStateBase<T>> on BlocBase<S> {
       addError(e, stackTrace);
     }
   }
+
+  FutureOr<T> onLazyLoad() => onLoadAsync();
 
   Future<T> onLoadAsync();
 

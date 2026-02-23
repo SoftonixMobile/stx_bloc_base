@@ -9,6 +9,13 @@ class TestFilterableNetworkListBloc extends NetworkFilterableListBloc<String,
       : super(NetworkFilterableState(data: [], visibleData: []));
 
   @override
+  Future<List<String>> onLazyLoad() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    return ['Lazy Loaded'];
+  }
+
+  @override
   Future<List<String>> onLoadAsync() async {
     await Future.delayed(Duration(milliseconds: 100));
 
@@ -47,6 +54,18 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.status.isInitial, isTrue);
         expect(bloc.state.data, isEmpty);
+        expect(bloc.state.filter, isNull);
+      },
+    );
+
+    blocTest(
+      'Lazy load data',
+      build: () => TestFilterableNetworkListBloc(),
+      act: (bloc) => bloc.lazyLoad(),
+      wait: Duration(milliseconds: 100),
+      verify: (bloc) {
+        expect(bloc.state.status.isSuccess, isTrue);
+        expect(bloc.state.data, ['Lazy Loaded']);
         expect(bloc.state.filter, isNull);
       },
     );
