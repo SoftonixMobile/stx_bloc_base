@@ -15,9 +15,9 @@ mixin NetworkBlocMixin<T, S extends NetworkStateBase<T>>
   }
 
   @override
-  void load() => add(NetworkEventLoadAsync());
-  @override
   void lazyLoad() => add(NetworkEventLazyLoadAsync());
+  @override
+  void load() => add(NetworkEventLoadAsync());
   @override
   void update(T updatedData) => add(NetworkEventUpdate(updatedData));
   @override
@@ -131,9 +131,9 @@ mixin NetworkBaseMixin<T, S extends NetworkStateBase<T>> on BlocBase<S> {
     }
   }
 
-  Future<T> onLoadAsync();
-
   FutureOr<T> onLazyLoad() => onLoadAsync();
+
+  Future<T> onLoadAsync();
 
   Future<T> onUpdateAsync(T updatedData) => Future.value(updatedData);
 
