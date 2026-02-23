@@ -1,10 +1,10 @@
 name: stx_bloc_base
 description: The package provides various generic implementations of blocs.
-version: 0.6.1
+version: 0.6.2
 
-homepage: https://github.com/VolodymyrSydorko/stx_bloc_base
-documentation: https://github.com/VolodymyrSydorko/stx_bloc_base
-repository: https://github.com/VolodymyrSydorko/stx_bloc_base
+homepage: https://github.com/SoftonixMobile/stx_bloc_base
+documentation: https://github.com/SoftonixMobile/stx_bloc_base
+repository: https://github.com/SoftonixMobile/stx_bloc_base
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -13,7 +13,6 @@ dependencies:
   bloc: ^9.0.0
   equatable: ^2.0.7
   meta: ^1.15.0
-
 
 dev_dependencies:
   test: ^1.25.14

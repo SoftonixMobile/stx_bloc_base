@@ -1,3 +1,10 @@
+## 0.6.2
+
+- Added `lazyLoad` method for deferred data loading (emits success immediately if data is already available, otherwise awaits the result)
+- Added `onLazyLoad` callback (defaults to `onLoadAsync`)
+- Added `NetworkEventLazyLoadAsync` event for bloc support
+- Added lazy load tests for all bloc and cubit variants
+
 ## 0.6.1
 
 - Added extraData into equals props for NetworkSearchableExtraState, NetworkFilterableExtraState
