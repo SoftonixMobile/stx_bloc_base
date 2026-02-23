@@ -11,6 +11,10 @@ class Person {
   Person(this.id, this.firstName, this.lastName);
 }
 
+final cachedPersons = [
+  Person(1, 'CachedFirstName1', 'CachedLastName1'),
+];
+
 final persons1 = [
   Person(1, 'FirstName1', 'LastName1'),
   Person(2, 'FirstName2', 'LastName2'),
@@ -27,6 +31,13 @@ class TestNetworkListBloc
             NetworkExtraListState<Person, int>> {
   TestNetworkListBloc() : super(NetworkExtraState(data: [], extraData: 0)) {
     super.network();
+  }
+
+  @override
+  Future<List<Person>> onLazyLoad() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    return cachedPersons;
   }
 
   @override
@@ -64,6 +75,18 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.status.isInitial, isTrue);
         expect(bloc.state.data, isEmpty);
+      },
+    );
+
+    blocTest(
+      "Lazy load state",
+      build: () => TestNetworkListBloc(),
+      act: (bloc) => bloc.lazyLoad(),
+      wait: Duration(milliseconds: 100),
+      verify: (bloc) {
+        expect(bloc.state.status.isSuccess, isTrue);
+        expect(bloc.state.extraData, 0);
+        expect(bloc.state.data, cachedPersons);
       },
     );
 

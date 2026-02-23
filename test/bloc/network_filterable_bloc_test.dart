@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc_test/bloc_test.dart';
 import 'package:test/test.dart';
 
@@ -9,6 +7,13 @@ class TestFilterableNetworkBloc extends NetworkFilterableBloc<String, String,
     NetworkFilterableState<String, String>> {
   TestFilterableNetworkBloc()
       : super(NetworkFilterableState(data: '', visibleData: ''));
+
+  @override
+  Future<String> onLazyLoad() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    return 'Lazy Loaded';
+  }
 
   @override
   Future<String> onLoadAsync() async {
@@ -42,6 +47,18 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.status.isInitial, isTrue);
         expect(bloc.state.data, isEmpty);
+        expect(bloc.state.filter, isNull);
+      },
+    );
+
+    blocTest(
+      'Lazy load data',
+      build: () => TestFilterableNetworkBloc(),
+      act: (bloc) => bloc.lazyLoad(),
+      wait: Duration(milliseconds: 100),
+      verify: (bloc) {
+        expect(bloc.state.status.isSuccess, isTrue);
+        expect(bloc.state.data, 'Lazy Loaded');
         expect(bloc.state.filter, isNull);
       },
     );

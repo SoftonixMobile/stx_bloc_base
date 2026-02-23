@@ -9,6 +9,13 @@ class TestNetworkBloc extends NetworkBloc<String, NetworkState<String>> {
   TestNetworkBloc() : super(NetworkState(data: ''));
 
   @override
+  Future<String> onLazyLoad() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    return 'Lazy loaded';
+  }
+
+  @override
   Future<String> onLoadAsync() async {
     await Future.delayed(Duration(milliseconds: 100));
 
@@ -31,6 +38,17 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.status.isInitial, isTrue);
         expect(bloc.state.data, isEmpty);
+      },
+    );
+
+    blocTest(
+      'Lazy load data',
+      build: () => TestNetworkBloc(),
+      act: (bloc) => bloc.lazyLoad(),
+      wait: Duration(milliseconds: 100),
+      verify: (bloc) {
+        expect(bloc.state.status.isSuccess, isTrue);
+        expect(bloc.state.data, 'Lazy loaded');
       },
     );
 

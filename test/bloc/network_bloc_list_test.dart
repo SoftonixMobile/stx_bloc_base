@@ -11,6 +11,10 @@ class Person {
   Person(this.id, this.firstName, this.lastName);
 }
 
+final cachedPersons = [
+  Person(1, 'CachedFirstName1', 'CachedLastName1'),
+];
+
 final persons1 = [
   Person(1, 'FirstName1', 'LastName1'),
   Person(2, 'FirstName2', 'LastName2'),
@@ -21,6 +25,13 @@ final persons1 = [
 class TestNetworkListBloc
     extends NetworkListBloc<Person, NetworkState<List<Person>>> {
   TestNetworkListBloc() : super(NetworkState(data: []));
+
+  @override
+  Future<List<Person>> onLazyLoad() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    return cachedPersons;
+  }
 
   @override
   Future<List<Person>> onLoadAsync() async {
@@ -80,6 +91,17 @@ void main() {
     );
 
     blocTest(
+      'Lazy load cached data',
+      build: () => TestNetworkListBloc(),
+      act: (bloc) => bloc.lazyLoad(),
+      wait: Duration(milliseconds: 100),
+      verify: (bloc) {
+        expect(bloc.state.status.isSuccess, isTrue);
+        expect(bloc.state.data, cachedPersons);
+      },
+    );
+
+    blocTest(
       "Load state",
       build: () => TestNetworkListBloc(),
       act: (bloc) => bloc.load(),
@@ -89,6 +111,7 @@ void main() {
         expect(bloc.state.data, persons1);
       },
     );
+
     blocTest(
       "Add item",
       build: () => TestNetworkListBloc(),

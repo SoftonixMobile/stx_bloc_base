@@ -9,6 +9,13 @@ class TestSearchableNetworkCubit
       : super(NetworkSearchableState(data: '', visibleData: ''));
 
   @override
+  Future<String> onLazyLoad() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    return 'Lazy Loaded';
+  }
+
+  @override
   Future<String> onLoadAsync() async {
     await Future.delayed(Duration(milliseconds: 100));
 
@@ -40,6 +47,17 @@ void main() {
       verify: (bloc) {
         expect(bloc.state.status.isInitial, isTrue);
         expect(bloc.state.data, isEmpty);
+        expect(bloc.state.query, isNull);
+      },
+    );
+
+    blocTest(
+      "Lazy load data",
+      build: () => TestSearchableNetworkCubit(),
+      act: (bloc) => bloc.lazyLoad(),
+      verify: (bloc) {
+        expect(bloc.state.status.isSuccess, isTrue);
+        expect(bloc.state.data, 'Lazy Loaded');
         expect(bloc.state.query, isNull);
       },
     );
