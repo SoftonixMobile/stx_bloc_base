@@ -1,3 +1,8 @@
+## 0.7.0
+
+- Updated dependencies: `bloc` ^9.2.1, `equatable` ^3.0.0, `meta` ^1.19.0
+- Updated dev dependencies: `test` ^1.32.0, `mocktail` ^1.0.5, `lints` ^6.1.0
+
 ## 0.6.2
 
 - Added `lazyLoad` method for deferred data loading (emits success immediately if data is already available, otherwise awaits the result)
