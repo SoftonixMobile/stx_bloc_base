@@ -10,12 +10,12 @@ environment:
   sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
-  bloc: ^9.0.0
-  equatable: ^2.0.7
-  meta: ^1.15.0
+  bloc: ^9.2.1
+  equatable: ^3.0.0
+  meta: ^1.19.0
 
 dev_dependencies:
-  test: ^1.25.14
+  test: ^1.32.0
   bloc_test: ^10.0.0
-  mocktail: ^1.0.4
-  lints: ^5.1.1
+  mocktail: ^1.0.5
+  lints: ^6.1.0
